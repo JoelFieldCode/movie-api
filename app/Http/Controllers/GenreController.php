@@ -11,23 +11,67 @@ use Illuminate\Support\Facades\DB;
 use Response;
 use App\Genre;
 use App\Movie;
-use app\Actor;
+use App\Actor;
 
 class GenreController extends BaseController
 {
     use AuthorizesRequests, AuthorizesResources, DispatchesJobs, ValidatesRequests;
     
-    public function test($genreName){
+    public function index(){
+        $allGenres = Genre::all();
+        
+        $detailInfo = array(
+        );
+        
+        foreach($allGenres as $genre){
+            $thisGenreArray = array(
+                'name' => $genre->name,
+                'movies' => array()
+            );
+            foreach($genre->movies as $movie){
+                $thisMovieArray = array(
+                    'desc' => $movie->desc,
+                    'name' => $movie->name,
+                    'rating' => $movie->rating
+                );
+                array_push($thisGenreArray['movies'], $thisMovieArray);
+            }
+            array_push($detailInfo, $thisGenreArray);
+        }
+        
+        return Response::json($detailInfo);
+    }
+    
+    public function store(Request $request){
+        $this->validate($request, [
+            'name' => 'required|max:255|unique:genres,name',
+        ]);
+    }
+    
+    public function find($genreName){
         
         
         
         $genre = Genre::whereRaw("name = ?", array($genreName))->firstOrFail();
         
-        $movies = $genre->movies;
-        
         $actorsArray = array();
         
-        foreach($movies as $movie){
+        $detailInfo = array(
+            'movies' => array(
+                
+            ),
+            'actors' => array(
+                
+            )
+        );
+        
+        foreach($genre->movies as $movie){
+            array_push($detailInfo['movies'], array(
+                    'genre' => $movie->genre,
+                    'name' => $movie->name,
+                    'desc' => $movie->desc,
+                    'rating' => $movie->rating
+            ));
             foreach($movie->actors as $actor){
                 $actorsArray[$actor->name] = array(
                     "bio" => $actor->bio    
@@ -35,12 +79,11 @@ class GenreController extends BaseController
             }
         }
         
-        return Response::json($actorsArray);
+        $detailInfo['actors'] = $actorsArray;
+        
+        return Response::json($detailInfo);
         
         
-        return Response::json($movies);
-        
-        return Response::json($genre);
 
     }
 }

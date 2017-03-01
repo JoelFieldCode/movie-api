@@ -20,9 +20,33 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+Route::get('actor', [
+    'middleware' => 'api',
+    'uses' => 'ActorController@index'
+]);
+
+Route::get('actor/{actorName}', [
+    'middleware' => 'api',
+    'uses' => 'ActorController@find'
+]);
+
+Route::get('movie/{movieName}', [
+    'middleware' => 'api',
+    'uses' => 'MovieController@find'
+]);
+Route::get('movie', [
+    'middleware' => 'api',
+    'uses' => 'MovieController@index'
+]);
+
 Route::get('genre/{genreName}', [
-    'middleware' => 'web',
-    'uses' => 'GenreController@test'
+    'middleware' => 'api',
+    'uses' => 'GenreController@find'
+]);
+
+Route::get('genre', [
+    'middleware' => 'api',
+    'uses' => 'GenreController@index'
 ]);
 
 Route::get('test', function () {

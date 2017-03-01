@@ -13,4 +13,8 @@ class Movie extends Model
     public function actors(){
         return $this->belongsToMany('App\Actor');
     }
+    
+    protected $fillable = [
+        'name', 'desc', 'rating'  
+    ];
 }
