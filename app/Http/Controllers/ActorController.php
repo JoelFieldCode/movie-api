@@ -18,19 +18,25 @@ class ActorController extends BaseController
 {
     use AuthorizesRequests, AuthorizesResources, DispatchesJobs, ValidatesRequests;
     
+    // Get all actors
     public function index(){
         $allActors = Actor::all();
         
         $detailInfo = array(
             
         );
+        
+        // Create array with all actors
         foreach($allActors as $actor){
+            // Each actor's info
             $thisActorArray = array(
                 'name' => $actor->name,
                 'bio' => $actor->bio,
                 'age' => $actor->age,
                 'movies' => array()
             );
+            
+            // Each actors movies
             foreach($actor->movies as $movie){
                 array_push($thisActorArray['movies'], array(
                     'name' => $movie->name,
@@ -39,22 +45,28 @@ class ActorController extends BaseController
                     'genre' => $movie->genre->name
                 ));
             }
+            
+            // Push this actor's info and movies into array
             array_push($detailInfo, $thisActorArray);
         }
         
+        // Return list of actors and their specific information
         return Response::json($detailInfo);
     }
     
+    // Find actor
     public function find($actorName){
         
         
+        // Find actors with the given name
         $actor = Actor::whereRaw("name = ?", array($actorName))->firstOrFail();
         
-        
+        // Found actor, get information ready
         $detailInfo = array(
             'movies' => array(
                 
             ),
+            // Actors specific info
             'info' => array(
                 'name' => $actor->name,
                 'bio' => $actor->bio,
@@ -62,6 +74,7 @@ class ActorController extends BaseController
             )
         );
         
+        // Push each of the actor's movie into the array
         foreach($actor->movies as $movie){
             array_push($detailInfo['movies'],  array(
                     'genre' => $movie->genre->name,
@@ -72,11 +85,12 @@ class ActorController extends BaseController
             );
         }
         
+        // Return detailed information of specific actor
         return Response::json($detailInfo);
         
 
     }
-    
+      // Add an actor to the database
      public function store(Request $request){
         $this->validate($request, [
             'name' => 'bail|required|max:255|string|unique:actors,name',
@@ -84,25 +98,37 @@ class ActorController extends BaseController
             'age' => 'bail|required|numeric',
         ]);
         
+        // Validation passed, create actor
+        
        $newActor = Actor::create($request->all());
         
+       // Successfully created actor
        return Response::json(array("created" => true));
         
         
     }
-    
-    public function addActorToMovie(Request $request){
+    // Add an actor to a specific movie
+    public function addToMovie(Request $request){
         $this->validate($request, [
-            'actorName' => 'bail|required|max:255|string|exists:actors,name',
+            'actor' => 'bail|required|max:255|string|exists:actors,name',
             'movie' => 'bail|required|max:255|string|exists:movies,name'
         ]);
         
-        $actor = Actor::whereRaw("name = ?", array($request->input["actorName"]))->firstOrFail();
+        // Validation passed
         
-        $movie = Movie::whereRaw("name = ?", array($request->input["movie"]))->firstOrFail();
+        $input = $request->all();
         
+        
+        // Get the actor model        
+        $actor = Actor::whereRaw("name = ?", array($input["actor"]))->firstOrFail();
+        
+        // Get the movie model
+        $movie = Movie::whereRaw("name = ?", array($input["movie"]))->firstOrFail();
+        
+        // Add actor to movie
         $movie->actors()->attach($actor->id);
         
+        // Successfully added actor to movie
         return Response::json(array("created" => true));
     }
 }

@@ -11,43 +11,12 @@ class ExampleTest extends TestCase
      *
      * @return void
      */
-    public function testGetRoutes()
-    {
-    
-             
-        $this->json('GET', '/actor')
-             ->seeJsonStructure([
-                 "*" => ["name", "bio", "movies", "age"]
-             ]);   
-        $this->json('GET', '/actor/Leonardo%20Dicaprio')
-             ->seeJsonStructure([
-                 "info" => ["name", "bio","age"]
-             ]);  
-             
-        $this->json('GET', '/movie')
-             ->seeJsonStructure([
-                 "*" => ["name", "genre", "desc", "rating", "actors"]
-             ]); 
-             
-        $this->json('GET', '/movie/Inception')
-             ->seeJsonStructure([
-                 "name", "genre", "desc", "rating", "actors"
-             ]);
-             
-        $this->json('GET', '/genre')
-             ->seeJsonStructure([
-                 "*" => ["name", "movies"]
-             ]);
-             
-        $this->json('GET', '/genre/Thriller')
-             ->seeJson([
-                 "name" => "Thriller"
-             ]); 
-            
-    }
-    
     public function testPOSTRoutes()
     {
+        Artisan::call('migrate:refresh');
+        
+        Artisan::call('db:seed');
+        
         $this->json('POST', '/create/movie', ["name" => "The Dark Knight", "desc" => "cool", "rating" => 5,"genre" => "Thriller"])
              ->seeJson([
                  "created" => true
@@ -58,13 +27,51 @@ class ExampleTest extends TestCase
                  "created" => true
              ]);
              
-        $this->json('POST', '/create/addActorToMovie', ["actorName" => "Robert Downey Jr", "movie" => "Zodiac"])
+        $this->json('POST', '/create/actor/addToMovie', ["actor" => "Robert Downey Jr", "movie" => "The Dark Knight"])
              ->seeJson([
                  "created" => true
              ]);
              
-
-        
+        $this->json('POST', '/create/genre', ["name" => "Drama"])
+             ->seeJson([
+                 "created" => true
+             ]);
+             
+    }
+    
+    public function testGetRoutes()
+    {
+    
+             
+        $this->json('GET', '/actor')
+             ->seeJsonStructure([
+                 "*" => ["name", "bio", "movies", "age"]
+             ]);   
+        $this->json('GET', '/actor/Robert Downey Jr')
+             ->seeJsonStructure([
+                 "info" => ["name", "bio","age"]
+             ]);  
+             
+        $this->json('GET', '/movie')
+             ->seeJsonStructure([
+                 "*" => ["name", "genre", "desc", "rating", "actors"]
+             ]); 
+             
+        $this->json('GET', '/movie/The Dark Knight')
+             ->seeJsonStructure([
+                 "name", "genre", "desc", "rating", "actors"
+             ]);
+             
+        $this->json('GET', '/genre')
+             ->seeJsonStructure([
+                 "*" => ["name", "movies"]
+             ]);
+             
+        $this->json('GET', '/genre/Drama')
+             ->seeJson([
+                 "name" => "Drama"
+             ]); 
+            
     }
     
 }

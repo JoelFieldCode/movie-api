@@ -18,11 +18,13 @@ class MovieController extends BaseController
 {
     use AuthorizesRequests, AuthorizesResources, DispatchesJobs, ValidatesRequests;
     
+    // Get all Movies
     public function index(){
         $allMovies = Movie::all();
         
         $detailInfo = array();
         
+        // Add each movie to array
         foreach($allMovies as $movie){
             $thisMovieArray = array(
                 'name' => $movie->name,
@@ -31,6 +33,7 @@ class MovieController extends BaseController
                 'rating' => $movie->rating,
                 'actors' => array()
             );
+            // Add each movie's actors to array
             foreach($movie->actors as $actor){
                 array_push($thisMovieArray['actors'], array(
                     'name' => $actor->name,
@@ -38,13 +41,15 @@ class MovieController extends BaseController
                     'bio' => $actor->bio
                 ));
             }
-            
+            // Push the movie to the array of movies
             array_push($detailInfo, $thisMovieArray);
         }
         
+        // Return list of movies and their information
         return Response::json($detailInfo);
     }
     
+    // Add a movie
     public function store(Request $request){
         $this->validate($request, [
             'name' => 'bail|required|max:255|string|unique:movies,name',
@@ -52,27 +57,32 @@ class MovieController extends BaseController
             'rating' => 'bail|required|numeric',
             'genre' => 'bail|required|max:255|string|exists:genres,name',
         ]);
+        // Validation passed
         
         $input = $request->all();
         
+        // Find genre so we can attach it to this movie
         $genre = Genre::whereRaw("name = ?", array($input["genre"]))->firstOrFail();
         
+        // Create new movie
         $newMovie = Movie::create($input);
         
+        // Add movie to genre
         $genre->movies()->save($newMovie);
         
+        // Created successfully
         return Response::json(array("created" => true));
         
         
     }
-    
+    // Find a movie
     public function find($movieName){
         
         
-        
+        // Find movie based on the input, or fail
         $movie = Movie::whereRaw("name = ?", array($movieName))->firstOrFail();
     
-        
+        // Found movie, fill up array with details about this movie
         $detailInfo = array(
             'name' => $movie->name,
             'desc' => $movie->desc,
@@ -82,6 +92,7 @@ class MovieController extends BaseController
             )
         );
         
+        // Create array showing the actors in this movie
         foreach($movie->actors as $actor){
             array_push($detailInfo['actors'], array(
                  "bio" => $actor->bio,
@@ -90,9 +101,7 @@ class MovieController extends BaseController
             ));
         }
         
+        // Return this movie's detailed information
         return Response::json($detailInfo);
-        
-    
-
     }
 }
