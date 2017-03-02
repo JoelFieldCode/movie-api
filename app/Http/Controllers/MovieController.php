@@ -12,6 +12,7 @@ use Response;
 use App\Genre;
 use App\Movie;
 use App\Actor;
+use Illuminate\Http\Request;
 
 class MovieController extends BaseController
 {
@@ -49,19 +50,18 @@ class MovieController extends BaseController
             'name' => 'bail|required|max:255|string|unique:movies,name',
             'desc' => 'bail|required|max:255|string',
             'rating' => 'bail|required|numeric',
-            'genre' => 'bail|required|max:255|string',
+            'genre' => 'bail|required|max:255|string|exists:genres,name',
         ]);
         
-        $genre = Genre::whereRaw("name = ?", array($request->genre))->first();
-        if(count($genre) < 1){
-            $genre = Genre::create($request);
-        }
+        $input = $request->all();
         
-        $newMovie = Movie::create($request);
+        $genre = Genre::whereRaw("name = ?", array($input["genre"]))->firstOrFail();
+        
+        $newMovie = Movie::create($input);
         
         $genre->movies()->save($newMovie);
         
-        return Response::json($newMovie);
+        return Response::json(array("created" => true));
         
         
     }

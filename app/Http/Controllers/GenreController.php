@@ -12,6 +12,7 @@ use Response;
 use App\Genre;
 use App\Movie;
 use App\Actor;
+use Illuminate\Http\Request;
 
 class GenreController extends BaseController
 {
@@ -62,12 +63,13 @@ class GenreController extends BaseController
             ),
             'actors' => array(
                 
-            )
+            ),
+            'name' => $genre->name
         );
         
         foreach($genre->movies as $movie){
             array_push($detailInfo['movies'], array(
-                    'genre' => $movie->genre,
+                    'genre' => $movie->genre->name,
                     'name' => $movie->name,
                     'desc' => $movie->desc,
                     'rating' => $movie->rating

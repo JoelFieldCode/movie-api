@@ -12,6 +12,7 @@ use Response;
 use App\Genre;
 use App\Movie;
 use App\Actor;
+use Illuminate\Http\Request;
 
 class ActorController extends BaseController
 {
@@ -63,7 +64,7 @@ class ActorController extends BaseController
         
         foreach($actor->movies as $movie){
             array_push($detailInfo['movies'],  array(
-                    'genre' => $movie->genre,
+                    'genre' => $movie->genre->name,
                     'name' => $movie->name,
                     'desc' => $movie->desc,
                     'rating' => $movie->rating
@@ -83,14 +84,25 @@ class ActorController extends BaseController
             'age' => 'bail|required|numeric',
         ]);
         
-       $newActor = Actor::create($request);
+       $newActor = Actor::create($request->all());
         
-       return Response::json($newActor);
+       return Response::json(array("created" => true));
         
         
     }
     
-    public function addMovie(Request $request){
+    public function addActorToMovie(Request $request){
+        $this->validate($request, [
+            'actorName' => 'bail|required|max:255|string|exists:actors,name',
+            'movie' => 'bail|required|max:255|string|exists:movies,name'
+        ]);
         
+        $actor = Actor::whereRaw("name = ?", array($request->input["actorName"]))->firstOrFail();
+        
+        $movie = Movie::whereRaw("name = ?", array($request->input["movie"]))->firstOrFail();
+        
+        $movie->actors()->attach($actor->id);
+        
+        return Response::json(array("created" => true));
     }
 }

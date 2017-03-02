@@ -16,6 +16,8 @@ use App\Actor;
 use App\Http\Controllers\GenreController;
 use Illuminate\Http\Request;
 
+header('Access-Control-Allow-Origin', '*');
+
 Route::get('/', function () {
     return view('welcome');
 });
@@ -38,6 +40,22 @@ Route::get('movie', [
     'middleware' => 'api',
     'uses' => 'MovieController@index'
 ]);
+
+Route::post('create/movie', [
+    'middleware' => 'api',
+    'uses' => 'MovieController@store'
+]);
+
+Route::post('create/actor', [
+    'middleware' => 'api',
+    'uses' => 'ActorController@store'
+]);
+
+Route::post('create/addActorToMovie', [
+    'middleware' => 'api',
+    'uses' => 'ActorController@addActorToMovie'
+]);
+
 
 Route::get('genre/{genreName}', [
     'middleware' => 'api',

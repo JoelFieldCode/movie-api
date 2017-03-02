@@ -24,13 +24,38 @@ class DatabaseSeeder extends Seeder
         
         $leo->save();
         
+        $jake = new Actor();
+        $jake->name = "Jake Gylenhaal";
+        $jake->bio = "Some dude";
+        $jake->age = 30;
+        
+        $jake->save();
+        
+        $zodiac = new Movie();
+        
+        $zodiac->name = "Zodiac";
+        $zodiac->desc = "Awesome";
+        $zodiac->rating = 3;
+        
+        $zodiac->save();
         
         $inception = new Movie();
         $inception->name = "Inception";
         $inception->desc = "Cool Movie";
-        $inception->rating = 5;
+        $inception->rating = 4;
         
         $inception->save();
+        
+        $nightcrawler = new Movie();
+        $nightcrawler->name = "Nightcrawler";
+        $nightcrawler->desc = "Creepy";
+        $nightcrawler->rating = 5;
+        
+        $nightcrawler->save();
+        
+        $nightcrawler->actors()->attach($jake->id);
+        
+        $zodiac->actors()->attach($jake->id);
         
         $inception->actors()->attach($leo->id);
     
@@ -39,6 +64,17 @@ class DatabaseSeeder extends Seeder
         $thriller->name = "Thriller";
         
         $thriller->save();
+        
+        $crime = new Genre();
+        $crime->name = "Crime";
+        
+        $crime->save();
+        
+        $crime->movies()->save($zodiac);
+        
+        $crime->save();
+        
+        $thriller->movies()->save($nightcrawler);
         
         $thriller->movies()->save($inception);
         
