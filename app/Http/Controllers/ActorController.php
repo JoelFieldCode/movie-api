@@ -33,6 +33,7 @@ class ActorController extends BaseController
                 'name' => $actor->name,
                 'bio' => $actor->bio,
                 'age' => $actor->age,
+                'dob' => $actor->dob,
                 'movies' => array()
             );
             
@@ -57,9 +58,9 @@ class ActorController extends BaseController
     // Find actor
     public function find($actorName){
         
-        
+        $filteredName = filter_var(trim($actorName),FILTER_SANITIZE_STRING);
         // Find actors with the given name
-        $actor = Actor::whereRaw("name = ?", array($actorName))->firstOrFail();
+        $actor = Actor::whereRaw("name = ?", array($filteredName))->firstOrFail();
         
         // Found actor, get information ready
         $detailInfo = array(
@@ -70,7 +71,8 @@ class ActorController extends BaseController
             'info' => array(
                 'name' => $actor->name,
                 'bio' => $actor->bio,
-                'age' => $actor->age
+                'age' => $actor->age,
+                'dob' => $actor->dob
             )
         );
         
@@ -96,6 +98,7 @@ class ActorController extends BaseController
             'name' => 'bail|required|max:255|string|unique:actors,name',
             'bio' => 'bail|required|max:255|string',
             'age' => 'bail|required|numeric',
+            'dob' => 'date_format:"d-m-Y"'
         ]);
         
         // Validation passed, create actor

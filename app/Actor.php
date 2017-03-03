@@ -11,6 +11,6 @@ class Actor extends Model
     }
     
     protected $fillable = [
-        'name', 'bio', 'age'  
+        'name', 'bio', 'age','dob'
     ];
 }

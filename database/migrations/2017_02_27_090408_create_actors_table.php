@@ -16,7 +16,7 @@ class CreateActorsTable extends Migration
             $table->increments('id');
             $table->string('name')->unique();
             $table->string('bio');
-            $table->date('birthdate')->nullable();
+            $table->date('dob');
             $table->double('age');
             $table->timestamps();
         });

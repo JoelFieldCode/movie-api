@@ -20,7 +20,12 @@ class MovieController extends BaseController
     
     // Get all Movies
     public function index(){
+        
         $allMovies = Movie::all();
+        
+        if(count($allMovies->toArray()) < 1){
+            abort(404);
+        }
         
         $detailInfo = array();
         
@@ -75,12 +80,14 @@ class MovieController extends BaseController
         
         
     }
+    
     // Find a movie
     public function find($movieName){
         
+        $filteredName = filter_var(trim($movieName),FILTER_SANITIZE_STRING);
         
         // Find movie based on the input, or fail
-        $movie = Movie::whereRaw("name = ?", array($movieName))->firstOrFail();
+        $movie = Movie::whereRaw("name = ?", array($filteredName))->firstOrFail();
     
         // Found movie, fill up array with details about this movie
         $detailInfo = array(

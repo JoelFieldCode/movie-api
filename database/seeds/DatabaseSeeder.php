@@ -21,6 +21,7 @@ class DatabaseSeeder extends Seeder
         $leo->name = "Leonardo Dicaprio";
         $leo->bio = "Cool dude";
         $leo->age = 35;
+        $leo->dob = "24-03-1992";
         
         $leo->save();
         
@@ -28,6 +29,7 @@ class DatabaseSeeder extends Seeder
         $jake->name = "Jake Gylenhaal";
         $jake->bio = "Some dude";
         $jake->age = 30;
+        $jake->dob = "24-03-1992";
         
         $jake->save();
         
