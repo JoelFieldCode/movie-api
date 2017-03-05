@@ -10,72 +10,88 @@
 | and give it the controller to call when that URI is requested.
 |
 */
-use App\Genre;
-use App\Movie;
-use App\Actor;
-use App\Http\Controllers\GenreController;
-use Illuminate\Http\Request;
 
 Route::get('/', function () {
     return view('welcome');
 });
 
+/* Actor routes */
+
+// Get all the actors
 Route::get('actor', [
     'middleware' => 'api',
     'uses' => 'ActorController@index'
 ]);
 
+// Get detailed information about a specific actor
 Route::get('actor/{actorName}', [
     'middleware' => 'api',
     'uses' => 'ActorController@find'
 ]);
 
-Route::get('movie/{movieName}', [
-    'middleware' => 'api',
-    'uses' => 'MovieController@find'
-]);
-Route::get('movie', [
-    'middleware' => 'api',
-    'uses' => 'MovieController@index'
-]);
-
-Route::post('create/movie', [
-    'middleware' => 'api',
-    'uses' => 'MovieController@store'
-]);
-
+// Create a new actor
 Route::post('create/actor', [
     'middleware' => 'api',
     'uses' => 'ActorController@store'
 ]);
 
+// Add an actor to a movie
 Route::post('create/actor/addToMovie', [
     'middleware' => 'api',
     'uses' => 'ActorController@addToMovie'
 ]);
 
+// Update an actor's profile image, this feature isn't currently working.
+Route::post('update/actor/image', [
+    'middleware' => 'api',
+    'uses' => 'ActorController@updateProfileImage'
+]);
+
+
+
+
+/* Movie routes */
+
+// Get all movies
+Route::get('movie', [
+    'middleware' => 'api',
+    'uses' => 'MovieController@index'
+]);
+
+// Get detailed information about a specific movie
+Route::get('movie/{movieName}', [
+    'middleware' => 'api',
+    'uses' => 'MovieController@find'
+]);
+
+// Create a new movie
+Route::post('create/movie', [
+    'middleware' => 'api',
+    'uses' => 'MovieController@store'
+]);
+
+
+
+
+
+
+/* Genre Routes */
+
+// Create a new genre
 Route::post('create/genre', [
     'middleware' => 'api',
     'uses' => 'GenreController@store'
 ]);
 
-
+// Get the detailed information of a specific genre
 Route::get('genre/{genreName}', [
     'middleware' => 'api',
     'uses' => 'GenreController@find'
 ]);
 
+// Retrieve all genres
 Route::get('genre', [
     'middleware' => 'api',
     'uses' => 'GenreController@index'
 ]);
 
-Route::get('test', function () {
-    // return GenreController::test();
-    $genre = Genre::find(1);
-    $movie = Movie::find(1);
-    $actor = Actor::find(1);
-    return Response::json($actor->movies);
-    return Response::json($movie->actors);
-    return Response::json($genre->movies);
-});

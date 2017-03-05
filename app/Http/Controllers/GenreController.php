@@ -69,10 +69,8 @@ class GenreController extends BaseController
     // Find genre
     public function find($genreName){
         
-        $filteredName = filter_var(trim($genreName),FILTER_SANITIZE_STRING);
-        
         // Find genre with the given name
-        $genre = Genre::whereRaw("name = ?", array($filteredName))->firstOrFail();
+        $genre = Genre::whereRaw("name = ?", array($genreName))->firstOrFail();
         
         $actorsArray = array();
         

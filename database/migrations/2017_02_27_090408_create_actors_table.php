@@ -15,9 +15,10 @@ class CreateActorsTable extends Migration
         Schema::create('actors', function (Blueprint $table) {
             $table->increments('id');
             $table->string('name')->unique();
-            $table->string('bio');
-            $table->date('dob');
-            $table->double('age');
+            $table->string('bio')->default(" ");
+            $table->date('dob')->default("22-02-1992");
+            $table->integer('age')->default(0);
+            $table->string('image')->default(" ");
             $table->timestamps();
         });
     }

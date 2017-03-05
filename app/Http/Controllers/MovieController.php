@@ -58,8 +58,8 @@ class MovieController extends BaseController
     public function store(Request $request){
         $this->validate($request, [
             'name' => 'bail|required|max:255|string|unique:movies,name',
-            'desc' => 'bail|required|max:255|string',
-            'rating' => 'bail|required|numeric',
+            'desc' => 'bail|max:255|string',
+            'rating' => 'bail|numeric',
             'genre' => 'bail|required|max:255|string|exists:genres,name',
         ]);
         // Validation passed
@@ -84,10 +84,8 @@ class MovieController extends BaseController
     // Find a movie
     public function find($movieName){
         
-        $filteredName = filter_var(trim($movieName),FILTER_SANITIZE_STRING);
-        
         // Find movie based on the input, or fail
-        $movie = Movie::whereRaw("name = ?", array($filteredName))->firstOrFail();
+        $movie = Movie::whereRaw("name = ?", array($movieName))->firstOrFail();
     
         // Found movie, fill up array with details about this movie
         $detailInfo = array(

@@ -13,6 +13,7 @@ use App\Genre;
 use App\Movie;
 use App\Actor;
 use Illuminate\Http\Request;
+use Illuminate\Http\UploadedFile;
 
 class ActorController extends BaseController
 {
@@ -58,9 +59,9 @@ class ActorController extends BaseController
     // Find actor
     public function find($actorName){
         
-        $filteredName = filter_var(trim($actorName),FILTER_SANITIZE_STRING);
+        
         // Find actors with the given name
-        $actor = Actor::whereRaw("name = ?", array($filteredName))->firstOrFail();
+        $actor = Actor::whereRaw("name = ?", array($actorName))->firstOrFail();
         
         // Found actor, get information ready
         $detailInfo = array(
@@ -96,8 +97,8 @@ class ActorController extends BaseController
      public function store(Request $request){
         $this->validate($request, [
             'name' => 'bail|required|max:255|string|unique:actors,name',
-            'bio' => 'bail|required|max:255|string',
-            'age' => 'bail|required|numeric',
+            'bio' => 'bail|max:255|string',
+            'age' => 'bail|numeric',
             'dob' => 'date_format:"d-m-Y"'
         ]);
         
@@ -128,10 +129,53 @@ class ActorController extends BaseController
         // Get the movie model
         $movie = Movie::whereRaw("name = ?", array($input["movie"]))->firstOrFail();
         
+        // Determine if this movie already has this actor attached to it
+        if($movie->hasActor($actor) === true){
+            return Response::json([
+                "created" => "This actor already belongs to this movie"
+            ],422);
+        }
+        
         // Add actor to movie
         $movie->actors()->attach($actor->id);
         
         // Successfully added actor to movie
         return Response::json(array("created" => true));
+    }
+    
+    // This feature doesn't work yet. Explanations in the comments here and in the test case.
+    public function updateProfileImage(Request $request){
+        $this->validate($request, [
+            // 'image' => 'bail|required|image',
+            'actor' => 'bail|required|max:255|string|exists:actors,name',
+        ]);
+        
+        // See if we properly received a file from the request. This part isn't working properly as the file is coming through as NULL.
+        var_dump($request->file('image'));
+        
+        return "test";
+        
+        // Set destination path
+        $destinationPath = public_path().'/images';
+        
+        // Grab file
+        $file = $request->file('image');
+        
+        // Grab file name
+        $name = $file->getClientOriginalName();
+        
+        // Move file to images folder
+        $file->move($destinationPath, $name);
+        
+        $input = $request->all();
+        
+        // Get the actor model        
+        $actor = Actor::whereRaw("name = ?", array($input["actor"]))->firstOrFail();
+        
+        // Update actor's image filename
+        $actor->image = $name;
+        
+        $actor->save();
+        
     }
 }
