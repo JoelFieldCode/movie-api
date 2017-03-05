@@ -1,4 +1,5 @@
 If you don't want to set up this API locally then you can just use the Front-End App & the Apiary document to see how all the routes respond. 
+I will keep this API up at https://movie-api-joelfieldcode.c9users.io/movieAPI/public/
 
 
 Instructions (if you want to run this API locally):
@@ -26,7 +27,6 @@ The test script will run the migrations and seeding for you.
 API Documentation:
 
 http://docs.movieapi58.apiary.io/
-
 
 
 
