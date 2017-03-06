@@ -12,8 +12,8 @@ class Movie extends Model
             if($actor->name === $actorInThisMovie->name){
                 return true;
             }
-            return false;
         }
+        return false;
     }
     
     public function genre(){
